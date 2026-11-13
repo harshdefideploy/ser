@@ -1,0 +1,266 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  VIEWER
+}
+
+enum WalletStatus {
+  ACTIVE
+  BLOCKED
+  INACTIVE
+}
+
+enum DepositStatus {
+  DETECTED
+  WAITING_CONFIRMATIONS
+  CONFIRMED
+  REJECTED
+  REORGED
+}
+
+enum CreditStatus {
+  PENDING
+  PROVISIONING
+  PARTIALLY_PROVISIONED
+  RETRYING
+  ACTIVE
+  USED
+  EXPIRED
+  FAILED
+  CANCELLED
+}
+
+enum ResourceType {
+  ENERGY
+  BANDWIDTH
+}
+
+enum ProviderOrderStatus {
+  PENDING
+  SUBMITTED
+  FILLED
+  FAILED
+  CANCELLED
+}
+
+model AdminUser {
+  id                        String    @id @default(cuid())
+  email                     String    @unique
+  passwordHash              String
+  role                      AdminRole @default(ADMIN)
+  twoFactorEnabled          Boolean   @default(false)
+  twoFactorSecretEncrypted  String?
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
+  lastLoginAt               DateTime?
+
+  auditLogs AuditLog[]
+
+  @@map("admin_users")
+}
+
+model Wallet {
+  id        String       @id @default(cuid())
+  address   String
+  network   String
+  status    WalletStatus @default(ACTIVE)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  deposits           TRXDeposit[]
+  sponsorshipCredits SponsorshipCredit[]
+  providerOrders     ProviderOrder[]
+
+  @@unique([address, network])
+  @@index([address])
+  @@map("wallets")
+}
+
+/// Receiving / master TRON wallets monitored for inbound native TRX.
+model MasterWallet {
+  id        String   @id @default(cuid())
+  address   String   @unique
+  label     String   @default("")
+  network   String
+  enabled   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  deposits TRXDeposit[]
+
+  @@index([enabled, network])
+  @@map("master_wallets")
+}
+
+/// Sender wallets blocked from receiving sponsorship after a qualifying deposit.
+model BlacklistedWallet {
+  id        String    @id @default(cuid())
+  address   String    @unique
+  reason    String
+  active    Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  createdBy String?
+  removedAt DateTime?
+  removedBy String?
+
+  @@index([address, active])
+  @@index([active])
+  @@map("blacklisted_wallets")
+}
+
+model TRXDeposit {
+  id              String        @id @default(cuid())
+  walletId        String
+  masterWalletId  String?
+  txid            String        @unique
+  blockNumber     BigInt?
+  fromAddress     String
+  toAddress       String
+  amountTrx       Decimal       @db.Decimal(36, 18)
+  confirmations   Int           @default(0)
+  status          DepositStatus @default(DETECTED)
+  /// e.g. BLACKLISTED_SENDER when status=REJECTED due to sender blacklist
+  rejectionReason String?
+  detectedAt      DateTime      @default(now())
+  confirmedAt     DateTime?
+  createdAt       DateTime      @default(now())
+
+  wallet       Wallet        @relation(fields: [walletId], references: [id])
+  masterWallet MasterWallet? @relation(fields: [masterWalletId], references: [id])
+  credit       SponsorshipCredit?
+
+  @@index([fromAddress])
+  @@index([toAddress])
+  @@index([status])
+  @@index([detectedAt])
+  @@index([createdAt])
+  @@index([masterWalletId])
+  @@index([rejectionReason])
+  @@map("trx_deposits")
+}
+
+model SponsorshipCredit {
+  id              String       @id @default(cuid())
+  walletId        String
+  depositId       String       @unique
+  status          CreditStatus @default(PENDING)
+  /// Snapshot of configured package at credit creation (never resized by wallet balances)
+  energyTarget    Int          @default(150000)
+  bandwidthTarget Int          @default(1000)
+  createdAt       DateTime     @default(now())
+  activatedAt     DateTime?
+  usedAt          DateTime?
+  expiresAt       DateTime?
+
+  wallet         Wallet         @relation(fields: [walletId], references: [id])
+  deposit        TRXDeposit     @relation(fields: [depositId], references: [id])
+  providerOrders ProviderOrder[]
+
+  @@index([walletId, status])
+  @@index([status, expiresAt])
+  @@map("sponsorship_credits")
+}
+
+model ProviderOrder {
+  id               String              @id @default(cuid())
+  creditId         String
+  walletId         String
+  provider         String
+  providerOrderId  String?
+  resourceType     ResourceType
+  requestedAmount  Decimal             @db.Decimal(36, 0)
+  deliveredAmount  Decimal?            @db.Decimal(36, 0)
+  duration         Int?
+  status           ProviderOrderStatus @default(PENDING)
+  providerCostTrx  Decimal?            @db.Decimal(36, 18)
+  providerCostUsd  Decimal?            @db.Decimal(36, 18)
+  idempotencyKey   String              @unique
+  requestedAt      DateTime            @default(now())
+  filledAt         DateTime?
+  failedAt         DateTime?
+  metadataJson     Json?
+  lastError        String?
+
+  credit SponsorshipCredit @relation(fields: [creditId], references: [id])
+  wallet Wallet            @relation(fields: [walletId], references: [id])
+
+  @@unique([creditId, resourceType])
+  @@index([status])
+  @@index([providerOrderId])
+  @@index([creditId])
+  @@map("provider_orders")
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  adminId    String?
+  action     String
+  entityType String?
+  entityId   String?
+  metadata   Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  admin AdminUser? @relation(fields: [adminId], references: [id])
+
+  @@index([action])
+  @@index([createdAt])
+  @@index([adminId])
+  @@map("audit_logs")
+}
+
+model SystemSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
+  updatedBy   String?
+
+  @@map("system_settings")
+}
+
+model WorkerState {
+  id           String   @id @default(cuid())
+  workerName   String   @unique
+  lastRunAt    DateTime?
+  lastSuccessAt DateTime?
+  lastError    String?
+  cursor       String?
+  isHealthy    Boolean  @default(true)
+  updatedAt    DateTime @updatedAt
+
+  @@map("worker_states")
+}
+
+model DailyAnalytics {
+  id                      String   @id @default(cuid())
+  date                    DateTime @db.Date
+  sponsorshipsCreated     Int      @default(0)
+  sponsorshipsUsed        Int      @default(0)
+  sponsorshipsFailed      Int      @default(0)
+  sponsorshipsExpired     Int      @default(0)
+  trxDeposited            Decimal  @default(0) @db.Decimal(36, 18)
+  providerCostTrx         Decimal  @default(0) @db.Decimal(36, 18)
+  energyPurchased         Decimal  @default(0) @db.Decimal(36, 0)
+  bandwidthPurchased      Decimal  @default(0) @db.Decimal(36, 0)
+  energyConsumed          Decimal  @default(0) @db.Decimal(36, 0)
+  bandwidthConsumed       Decimal  @default(0) @db.Decimal(36, 0)
+  sponsoredTxCount        Int      @default(0)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  @@unique([date])
+  @@map("daily_analytics")
+}
