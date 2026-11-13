@@ -65,11 +65,27 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     });
 
     const env = getEnv();
+    const webOrigin = (() => {
+      try {
+        return new URL(env.WEB_URL).origin;
+      } catch {
+        return env.WEB_URL;
+      }
+    })();
+    const apiOrigin = (() => {
+      try {
+        return new URL(env.API_URL).origin;
+      } catch {
+        return env.API_URL;
+      }
+    })();
+    const crossSite = webOrigin !== apiOrigin;
     reply.setCookie(getSessionCookieName(), token, {
       path: "/",
       httpOnly: true,
-      sameSite: "lax",
-      secure: env.NODE_ENV === "production",
+      // Cross-origin admin (web.* → api.*) needs None; same-origin keeps Lax.
+      sameSite: crossSite ? "none" : "lax",
+      secure: env.NODE_ENV === "production" || crossSite,
       maxAge: 60 * 60 * 12,
     });
 
@@ -94,7 +110,18 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
       logEvent(LOG_EVENTS.ADMIN_LOGOUT, { adminId: request.admin.sub });
     }
 
-    reply.clearCookie(getSessionCookieName(), { path: "/" });
+    const env = getEnv();
+    let crossSite = false;
+    try {
+      crossSite = new URL(env.WEB_URL).origin !== new URL(env.API_URL).origin;
+    } catch {
+      crossSite = env.WEB_URL !== env.API_URL;
+    }
+    reply.clearCookie(getSessionCookieName(), {
+      path: "/",
+      sameSite: crossSite ? "none" : "lax",
+      secure: env.NODE_ENV === "production" || crossSite,
+    });
     return { ok: true };
   });
 

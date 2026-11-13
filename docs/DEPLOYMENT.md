@@ -24,35 +24,64 @@ docker compose up -d --build
 
 Services: `web`, `api`, `worker`, `postgres`.
 
-## Voroa (monitor + tron-db)
+## Voroa (full stack: monitor + web + worker + tron-db)
 
-### Service commands (API-only service)
+Deploy **three** Node services from the same repo + one Postgres (`tron-db`).
+
+### 1) `monitor` (API)
 
 | Setting | Recommended value |
 |---|---|
 | Node | **20** or **22** |
 | Install | platform default (`pnpm install --frozen-lockfile`) |
 | Build | `npm run build:api` |
-| Pre-deploy | `npm run db:migrate` |
-| Start | `npm run start:api` |
-
-If pre-deploy keeps failing because env is not injected there, clear Pre-deploy and use:
-
+| Pre-deploy | *(empty — migrate/seed run in start)* |
 | Start | `npm run start:release` |
 
-(`start:release` = migrate then start API.)
+(`start:release` = migrate → seed admin/settings → start API.)
 
-### Required env on `monitor`
+### 2) `web` (admin UI)
 
-Must be present (runtime; also needed for migrate):
+| Setting | Recommended value |
+|---|---|
+| Node | **20** or **22** |
+| Build | `npm run build:web` |
+| Pre-deploy | *(empty)* |
+| Start | `npm run start:web` |
+
+**Build-time env (required on Voroa Environment before first web build):**
+
+- `NEXT_PUBLIC_API_URL` = `https://monitor.onvoroa.com` (or your API public URL)
+
+Runtime: `PORT` is set by the platform; Next binds `0.0.0.0`.
+
+### 3) `worker` (background jobs)
+
+| Setting | Recommended value |
+|---|---|
+| Node | **20** or **22** |
+| Build | `npm run build:api` |
+| Pre-deploy | *(empty)* |
+| Start | `npm run start:worker` |
+
+Same secrets/DB as `monitor`. Set `WORKER_ENABLED=true`.
+
+### Required env on `monitor` / `worker`
+
+Must be present (runtime; also needed for migrate/seed):
 
 - `DATABASE_URL` — **linked via Connect to a service** (preferred) or pasted from “Get connection details”
 - `JWT_SECRET` (≥32)
 - `COOKIE_SECRET` (≥32)
 - `ENCRYPTION_KEY` (64 hex)
-- `WEB_URL` / `API_URL` / `NEXT_PUBLIC_API_URL` → your public URL
-- `ADMIN_EMAIL` / `ADMIN_PASSWORD`
+- `API_URL` → public API URL (e.g. `https://monitor.onvoroa.com`)
+- `WEB_URL` → public **web** URL (e.g. `https://web.onvoroa.com`) — CORS + cookies
+- `ADMIN_EMAIL` / `ADMIN_PASSWORD` — first seed only creates admin
 - GetGas / Tron keys as needed
+
+### Required env on `web`
+
+- `NEXT_PUBLIC_API_URL` → same as `API_URL` (must be present at **build** time)
 
 ### DATABASE_URL rules (most common failure)
 
