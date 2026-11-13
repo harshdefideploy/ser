@@ -18,6 +18,23 @@ docker compose ps
 
 Confirm `DATABASE_URL` host (`localhost` locally, `postgres` in Compose).
 
+## Voroa deploy aborted — `DATABASE_URL` not found
+
+Pre-deploy runs `npm run db:migrate`. Prisma needs `DATABASE_URL` in the **monitor** service environment.
+
+Fix:
+
+1. `tron-db` → Connect → **Connect to a service** → `monitor` → Connect, **or**
+2. Get connection details → Copy new URL → monitor Environment → set `DATABASE_URL` → Save → Manual Deploy
+
+## Voroa `/health` Prisma P1000 (auth failed)
+
+Password was rotated (Get connection details / Connect-to-service) but `DATABASE_URL` still has the old password. Copy the **new** URL into Environment and redeploy.
+
+## pnpm “Ignored build scripts” (prisma / esbuild)
+
+`pnpm-workspace.yaml` lists them under `allowBuilds` / `onlyBuiltDependencies`. Commit and redeploy so install downloads Prisma engines.
+
 ## Login fails after seed
 
 Re-run:

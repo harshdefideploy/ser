@@ -5,7 +5,7 @@
   "description": "TRON TRX gas sponsorship server (master-wallet deposit → fixed GetGas Energy+Bandwidth)",
   "packageManager": "pnpm@10.28.0",
   "engines": {
-    "node": ">=22"
+    "node": ">=20"
   },
   "workspaces": [
     "apps/*",
@@ -19,12 +19,15 @@
     "dev:web": "npm run dev --workspace=@tron-gas-sponsor/web",
     "dev:worker": "npm run worker --workspace=@tron-gas-sponsor/api",
     "worker": "npm run worker --workspace=@tron-gas-sponsor/api",
-    "build": "npm run build --workspace=@tron-gas-sponsor/shared && npm run build --workspace=@tron-gas-sponsor/config && npm run build --workspace=@tron-gas-sponsor/database && npm run link:workspaces && npm run build --workspace=@tron-gas-sponsor/api && npm run build --workspace=@tron-gas-sponsor/web",
+    "build": "npm run build --workspace=@tron-gas-sponsor/shared && npm run build --workspace=@tron-gas-sponsor/config && npm run db:generate && npm run build --workspace=@tron-gas-sponsor/database && npm run link:workspaces && npm run build --workspace=@tron-gas-sponsor/api && npm run build --workspace=@tron-gas-sponsor/web",
+    "build:api": "npm run build --workspace=@tron-gas-sponsor/shared && npm run build --workspace=@tron-gas-sponsor/config && npm run db:generate && npm run build --workspace=@tron-gas-sponsor/database && npm run link:workspaces && npm run build --workspace=@tron-gas-sponsor/api",
+    "start:api": "npm run start --workspace=@tron-gas-sponsor/api",
+    "start:release": "npm run db:migrate && npm run start:api",
     "typecheck": "npm run link:workspaces && npm run typecheck --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "test": "npm run test --workspace=@tron-gas-sponsor/api",
     "db:generate": "npm run generate --workspace=@tron-gas-sponsor/database",
-    "db:migrate": "npm run migrate:deploy --workspace=@tron-gas-sponsor/database",
+    "db:migrate": "node scripts/migrate-deploy.mjs",
     "db:push": "npm run push --workspace=@tron-gas-sponsor/database",
     "db:seed": "npm run seed --workspace=@tron-gas-sponsor/database",
     "db:studio": "npm run studio --workspace=@tron-gas-sponsor/database"
