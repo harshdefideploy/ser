@@ -7,11 +7,13 @@ async function main() {
   const app = await buildApp();
 
   try {
-    await app.listen({ port: env.API_PORT, host: "0.0.0.0" });
+    // Prefer platform PORT (Voroa/Render/etc), else API_PORT
+    const port = Number(process.env.PORT) || env.API_PORT;
+    await app.listen({ port, host: "0.0.0.0" });
     logger.info({
       service: "api",
       event: "SERVER_STARTED",
-      port: env.API_PORT,
+      port,
       network: env.TRON_NETWORK,
       appEnv: env.APP_ENV,
       phase: 1,
