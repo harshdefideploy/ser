@@ -31,6 +31,21 @@ export async function apiFetch<T>(
     } catch {
       // ignore
     }
+
+    // Session expired / missing — force login for admin API calls.
+    if (
+      typeof window !== "undefined" &&
+      res.status === 401 &&
+      !path.startsWith("/auth/login") &&
+      !path.startsWith("/auth/me") &&
+      !window.location.pathname.startsWith("/login")
+    ) {
+      const next = encodeURIComponent(
+        window.location.pathname + window.location.search,
+      );
+      window.location.replace(`/login?next=${next}`);
+    }
+
     throw new ApiError(message, res.status);
   }
 

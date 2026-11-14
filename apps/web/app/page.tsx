@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
 export default function HomePage() {
-  redirect("/admin");
+  // Always start at login — AuthGate also protects /admin.
+  redirect("/login");
 }
