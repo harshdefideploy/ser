@@ -107,11 +107,15 @@ export class GetGasProvider implements ResourceProvider {
       };
 
       if (!res.ok) {
-        throw new Error(
-          json.error ||
-            json.message ||
-            `GetGas HTTP ${res.status}`,
-        );
+        const detail =
+          typeof json.error === "string"
+            ? json.error
+            : json.error != null
+              ? JSON.stringify(json.error)
+              : typeof json.message === "string"
+                ? json.message
+                : `GetGas HTTP ${res.status}`;
+        throw new Error(detail);
       }
 
       return (json.data ?? json) as T;

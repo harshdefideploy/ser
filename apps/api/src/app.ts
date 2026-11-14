@@ -15,6 +15,17 @@ import { logger } from "./lib/logger.js";
 export async function buildApp() {
   const env = getEnv();
 
+  // Prisma BigInt fields (e.g. deposit.blockNumber) must stringify for JSON.
+  if (!(BigInt.prototype as unknown as { toJSON?: () => string }).toJSON) {
+    Object.defineProperty(BigInt.prototype, "toJSON", {
+      value() {
+        return this.toString();
+      },
+      configurable: true,
+      writable: true,
+    });
+  }
+
   const app = Fastify({
     logger: false,
     trustProxy: true,

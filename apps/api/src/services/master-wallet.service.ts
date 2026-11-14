@@ -41,7 +41,12 @@ export async function ensureLegacyMasterWalletMigrated(): Promise<void> {
         network: env.TRON_NETWORK,
         enabled: true,
       },
-      update: {},
+      // Keep legacy master aligned with process network after env switches
+      // (e.g. shasta → mainnet) so deposit monitoring does not skip it.
+      update: {
+        network: env.TRON_NETWORK,
+        enabled: true,
+      },
     });
   }
 

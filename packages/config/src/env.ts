@@ -131,6 +131,10 @@ export function loadEnv(env: NodeJS.ProcessEnv = process.env): AppEnv {
 
   cached = parsed.data;
 
+  // CORS Origin must match browser Origin exactly (no trailing slash).
+  cached.WEB_URL = cached.WEB_URL.replace(/\/$/, "");
+  cached.API_URL = cached.API_URL.replace(/\/$/, "");
+
   // Resolve aliases into canonical fields used by the app
   if (cached.TRON_CONFIRMATIONS) {
     cached.CONFIRMATIONS_REQUIRED = cached.TRON_CONFIRMATIONS;
