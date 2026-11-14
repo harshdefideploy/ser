@@ -24,23 +24,60 @@ docker compose up -d --build
 
 Services: `web`, `api`, `worker`, `postgres`.
 
-## Render (Blueprint)
+## Railway (recommended)
 
-Repo root `render.yaml` deploys **tron-api**, **tron-web**, **tron-worker**. It does **not** create Postgres — use your existing Render database.
+Shared npm monorepo — create **three services** from the same GitHub repo.  
+**Do not** create a new Postgres; point `DATABASE_URL` at your **existing** Railway database.
 
-1. Dashboard → **New** → **Blueprint** → select `harshdefideploy/ser` (branch `main`)
-2. When prompted, set:
-   - `DATABASE_URL` = **Internal Database URL** from your existing Render Postgres
-   - `ENCRYPTION_KEY` = 64 hex chars
-   - `ADMIN_PASSWORD` = your admin password
-   - Tron / GetGas secrets as needed
-3. Prefer the Blueprint **region** matching your Postgres region (default in file: `singapore`)
-4. After deploy:
-   - `GET https://tron-api.onrender.com/health`
-   - `https://tron-web.onrender.com/login` with `ADMIN_EMAIL` / `ADMIN_PASSWORD`
-5. Worker uses **Starter** plan (Render background workers are not free). Skip creating `tron-worker` if you only need admin UI + API for now.
+Config files (set under each service → Settings → Config-as-code):
 
-`API_URL` / `WEB_URL` / `NEXT_PUBLIC_API_URL` are wired from each service’s `RENDER_EXTERNAL_URL`.
+| Service | Config path | Build | Start |
+|---|---|---|---|
+| `tron-api` | `/railway.api.toml` | `npm install && npm run build:api` | `npm run start:release` |
+| `tron-web` | `/railway.web.toml` | `npm install && npm run build:web` | `npm run start:web` |
+| `tron-worker` | `/railway.worker.toml` | `npm install && npm run build:api` | `npm run start:worker` |
+
+### Setup steps
+
+1. Open your Railway project (the one that already has Postgres).
+2. **New** → **GitHub Repo** → `harshdefideploy/ser` → name it `tron-api`.
+3. Settings → Config-as-code → `/railway.api.toml` · Root Directory leave `/`.
+4. Variables (API + Worker shared — use a shared Variable Group if you have one):
+
+```
+DATABASE_URL=${{Postgres.DATABASE_URL}}
+NODE_ENV=production
+APP_ENV=production
+TRON_NETWORK=shasta
+JWT_SECRET=<32+ chars>
+COOKIE_SECRET=<32+ chars>
+ENCRYPTION_KEY=<64 hex chars>
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=<your password>
+API_URL=https://${{tron-api.RAILWAY_PUBLIC_DOMAIN}}
+WEB_URL=https://${{tron-web.RAILWAY_PUBLIC_DOMAIN}}
+WORKER_ENABLED=false
+```
+
+Plus GetGas / Tron keys as needed.  
+(`${{Postgres.DATABASE_URL}}` — use your **existing** DB service name if it isn’t `Postgres`.)
+
+5. Generate a public domain for `tron-api` (Settings → Networking → Generate Domain).
+6. Add second service `tron-web` from the same repo → config `/railway.web.toml`. Variables:
+
+```
+NEXT_PUBLIC_API_URL=https://${{tron-api.RAILWAY_PUBLIC_DOMAIN}}
+```
+
+Generate a public domain for `tron-web`. Redeploy web after `NEXT_PUBLIC_API_URL` is set (build-time).
+
+7. Optional: add `tron-worker` → config `/railway.worker.toml`. Same secrets as API, with `WORKER_ENABLED=true`.
+
+8. Smoke:
+   - `GET https://<tron-api-domain>/health`
+   - `https://<tron-web-domain>/login`
+
+Node **20** (set `NIXPACKS_NODE_VERSION=20` on each service if detection picks wrong).
 
 ## Voroa (full stack: monitor + web + worker + tron-db)
 

@@ -1,0 +1,13 @@
+# Railway config-as-code for the API service.
+# Service Settings → Config-as-code path: /railway.api.toml
+
+[build]
+builder = "NIXPACKS"
+buildCommand = "npm install && npm run build:api"
+
+[deploy]
+startCommand = "npm run start:release"
+healthcheckPath = "/health"
+healthcheckTimeout = 120
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 5
