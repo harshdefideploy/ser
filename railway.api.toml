@@ -1,12 +1,12 @@
-# Railway config-as-code for the API service.
-# Service Settings → Config-as-code path: /railway.api.toml
+# Prefer setting Build/Start in Railway Dashboard (Config-as-code is deprecated for new services).
+# If your service still supports config file path, set it to: /railway.api.toml
 
 [build]
-builder = "NIXPACKS"
-buildCommand = "npm install && npm run build:api"
+builder = "RAILPACK"
+buildCommand = "pnpm install --frozen-lockfile && pnpm run build:api"
 
 [deploy]
-startCommand = "npm run start:release"
+startCommand = "pnpm run start:release"
 healthcheckPath = "/health"
 healthcheckTimeout = 120
 restartPolicyType = "ON_FAILURE"

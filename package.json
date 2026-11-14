@@ -22,6 +22,7 @@
     "build": "npm run build --workspace=@tron-gas-sponsor/shared && npm run build --workspace=@tron-gas-sponsor/config && npm run db:generate && npm run build --workspace=@tron-gas-sponsor/database && npm run link:workspaces && npm run build --workspace=@tron-gas-sponsor/api && npm run build --workspace=@tron-gas-sponsor/web",
     "build:api": "npm run build --workspace=@tron-gas-sponsor/shared && npm run build --workspace=@tron-gas-sponsor/config && npm run db:generate && npm run build --workspace=@tron-gas-sponsor/database && npm run link:workspaces && npm run build --workspace=@tron-gas-sponsor/api",
     "build:web": "npm run build --workspace=@tron-gas-sponsor/shared && npm run link:workspaces && npm run build --workspace=@tron-gas-sponsor/web",
+    "start": "npm run start:release",
     "start:api": "npm run db:migrate && npm run db:seed && npm run start --workspace=@tron-gas-sponsor/api",
     "start:web": "npm run start --workspace=@tron-gas-sponsor/web",
     "start:worker": "npm run start:worker --workspace=@tron-gas-sponsor/api",

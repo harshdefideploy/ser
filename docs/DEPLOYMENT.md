@@ -29,13 +29,16 @@ Services: `web`, `api`, `worker`, `postgres`.
 Shared npm monorepo — create **three services** from the same GitHub repo.  
 **Do not** create a new Postgres; point `DATABASE_URL` at your **existing** Railway database.
 
-Config files (set under each service → Settings → Config-as-code):
+Railway **new services** often ignore config-as-code — set Build/Start in the Dashboard
+(Settings → Build → Custom Build Command / Custom Start Command):
 
-| Service | Config path | Build | Start |
-|---|---|---|---|
-| `tron-api` | `/railway.api.toml` | `npm install && npm run build:api` | `npm run start:release` |
-| `tron-web` | `/railway.web.toml` | `npm install && npm run build:web` | `npm run start:web` |
-| `tron-worker` | `/railway.worker.toml` | `npm install && npm run build:api` | `npm run start:worker` |
+| Service | Build Command | Start Command |
+|---|---|---|
+| `tron-api` | `pnpm install --frozen-lockfile && pnpm run build:api` | `pnpm run start:release` |
+| `tron-web` | `pnpm install --frozen-lockfile && pnpm run build:web` | `pnpm run start:web` |
+| `tron-worker` | `pnpm install --frozen-lockfile && pnpm run build:api` | `pnpm run start:worker` |
+
+Also set `NIXPACKS_NODE_VERSION=20` (or Node 20 in service settings). Root `package.json` `"start"` defaults to API release (migrate+seed+API).
 
 ### Setup steps
 
