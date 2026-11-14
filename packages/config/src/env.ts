@@ -58,8 +58,15 @@ const envSchema = z.object({
   GETGAS_PROVIDER_TERM: z.enum(["15m", "1h"]).default("1h"),
   INTERNAL_API_SECRET: z.string().optional().default(""),
 
-  ADMIN_EMAIL: z.string().email().default("admin@example.com"),
-  ADMIN_PASSWORD: z.string().min(8).default("ChangeMeSecurely123!"),
+  // Empty string on platforms (write-only re-save) fails .email() — treat as unset.
+  ADMIN_EMAIL: z.preprocess(
+    (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
+    z.string().email().default("admin@example.com"),
+  ),
+  ADMIN_PASSWORD: z.preprocess(
+    (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
+    z.string().min(8).default("ChangeMeSecurely123!"),
+  ),
 
   JWT_SECRET: z.string().min(32),
   COOKIE_SECRET: z.string().min(32),
