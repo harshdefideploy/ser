@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { Zap } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { greeting } from "@/lib/format";
 
@@ -22,17 +23,15 @@ export function AppHeader() {
   const healthy = (data?.stats?.failedSponsorships ?? 0) === 0;
 
   return (
-    <header
-      className="sticky top-0 z-40 border-b border-white/[0.06] glass pt-safe md:hidden"
-    >
+    <header className="sticky top-0 z-40 border-b border-canvas-border/80 glass pt-safe md:hidden">
       <div className="flex items-center justify-between gap-3 px-4 py-3">
         <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent/15 text-sm text-accent shadow-glow">
-              ✦
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-sky-400 text-white shadow-glow">
+              <Zap className="h-4 w-4" fill="currentColor" />
             </span>
             <div>
-              <p className="text-sm font-semibold tracking-tight text-ink">
+              <p className="font-display text-sm font-semibold tracking-tight text-ink">
                 TRON Gas
               </p>
               <p className="text-[11px] text-ink-faint">
@@ -42,7 +41,7 @@ export function AppHeader() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-ink-muted">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-canvas-border bg-white px-2.5 py-1 text-[11px] font-semibold text-ink-muted shadow-sm">
             <span
               className={`h-1.5 w-1.5 rounded-full ${healthy ? "bg-accent-success pulse-dot" : "bg-accent-warning"}`}
             />

@@ -15,6 +15,7 @@ import {
   Settings,
   ScrollText,
   Menu,
+  Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -37,21 +38,23 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden h-full w-64 shrink-0 flex-col border-r border-white/[0.06] bg-canvas-elevated/80 md:flex">
-      <div className="border-b border-white/[0.06] px-5 py-6">
-        <div className="flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent/15 text-accent shadow-glow">
-            ✦
+    <aside className="hidden h-full w-64 shrink-0 flex-col border-r border-canvas-border bg-white/90 md:flex">
+      <div className="border-b border-canvas-border px-5 py-6">
+        <div className="flex items-center gap-3">
+          <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-sky-400 text-white shadow-glow">
+            <Zap className="h-5 w-5" fill="currentColor" />
           </span>
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-ink-faint">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent">
               TRON Gas
             </p>
-            <h1 className="text-lg font-semibold text-ink">Sponsor Ops</h1>
+            <h1 className="font-display text-lg font-semibold tracking-tight text-ink">
+              Sponsor Ops
+            </h1>
           </div>
         </div>
       </div>
-      <nav className="flex-1 space-y-0.5 overflow-y-auto p-3">
+      <nav className="flex-1 space-y-1 overflow-y-auto p-3">
         {links.map(({ href, label, icon: Icon }) => {
           const active =
             href === "/admin"
@@ -62,18 +65,26 @@ export function Sidebar() {
               key={href}
               href={href}
               className={cn(
-                "flex min-h-touch items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition",
+                "flex min-h-touch items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition",
                 active
-                  ? "bg-accent/15 text-accent shadow-glow"
-                  : "text-ink-muted hover:bg-white/5 hover:text-ink",
+                  ? "bg-accent text-white shadow-glow"
+                  : "text-ink-muted hover:bg-accent-soft hover:text-accent",
               )}
             >
-              <Icon className="h-4 w-4" />
+              <Icon className={cn("h-4 w-4", active ? "text-white" : "text-accent/80")} />
               {label}
             </Link>
           );
         })}
       </nav>
+      <div className="border-t border-canvas-border p-4">
+        <div className="rounded-2xl bg-gradient-to-br from-accent-soft to-white p-3 ring-1 ring-blue-100">
+          <p className="text-xs font-semibold text-accent">Auto top-up live</p>
+          <p className="mt-1 text-[11px] leading-relaxed text-ink-muted">
+            Deposits ≥ 0.1 TRX provision energy + bandwidth automatically.
+          </p>
+        </div>
+      </div>
     </aside>
   );
 }

@@ -19,7 +19,7 @@ export function LegalShell({
         >
           <span className="text-accent">✦</span> TRON Gas Sponsor
         </Link>
-        <h1 className="text-3xl font-semibold tracking-tight text-ink">
+        <h1 className="font-display text-3xl font-semibold tracking-tight text-ink">
           {title}
         </h1>
         <p className="mt-2 text-sm text-ink-muted">{subtitle}</p>

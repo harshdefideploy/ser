@@ -20,19 +20,24 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-screen min-h-dvh bg-canvas text-ink">
+    <div className="flex min-h-screen min-h-dvh bg-transparent text-ink">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <AppHeader />
-        <header className="hidden items-center justify-between border-b border-white/[0.06] px-6 py-3 md:flex">
-          <p className="text-sm text-ink-muted">
-            Resource sponsorship control plane
-          </p>
+        <header className="hidden items-center justify-between border-b border-canvas-border/80 bg-white/70 px-6 py-3 backdrop-blur md:flex">
+          <div>
+            <p className="font-display text-sm font-semibold text-ink">
+              Resource sponsorship control plane
+            </p>
+            <p className="text-xs text-ink-muted">
+              Monitor deposits, sponsorships, and GetGas delivery
+            </p>
+          </div>
           <Button variant="secondary" onClick={() => void logout()}>
             Sign out
           </Button>
         </header>
-        <main className="flex-1 overflow-auto px-4 py-4 md:p-6 pb-nav md:pb-6">
+        <main className="flex-1 overflow-auto px-4 py-4 md:p-6 pb-nav md:pb-8">
           <div className="mx-auto w-full max-w-6xl animate-enter">{children}</div>
         </main>
         <MobileNav />

@@ -2,6 +2,12 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import {
+  ArrowDownToLine,
+  Landmark,
+  Activity,
+  Sparkles,
+} from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { Card, StatCard } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -36,12 +42,16 @@ export default function AdminDashboardPage() {
     data.stats.failedSponsorships === 0;
 
   return (
-    <div className="space-y-4">
-      <div className="animate-enter">
-        <p className="text-sm text-ink-muted">{greeting()}, Admin</p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-ink">
-          Command center
+    <div className="space-y-5">
+      <div className="animate-fade-up">
+        <p className="text-sm font-medium text-accent">{greeting()}, Admin</p>
+        <h1 className="mt-1 font-display text-3xl font-semibold tracking-tight text-ink">
+          Command <span className="text-gradient-blue">center</span>
         </h1>
+        <p className="mt-2 max-w-xl text-sm text-ink-muted">
+          Live view of deposits, sponsorships, and provider spend — tuned for
+          fast auto top-up.
+        </p>
       </div>
 
       {isLoading ? (
@@ -63,25 +73,28 @@ export default function AdminDashboardPage() {
 
       {data ? (
         <>
-          <Card className="border-accent/20 bg-gradient-to-br from-accent/10 via-canvas-elevated to-canvas-elevated">
-            <div className="flex items-start justify-between gap-3">
+          <Card className="relative overflow-hidden border-blue-100 bg-gradient-to-br from-white via-white to-accent-soft/70 shadow-float">
+            <div className="pointer-events-none absolute -right-10 top-0 h-40 w-40 rounded-full bg-accent/10 blur-2xl" />
+            <div className="pointer-events-none absolute -left-8 bottom-0 h-28 w-28 rounded-full bg-sky-300/20 blur-2xl" />
+            <div className="relative flex items-start justify-between gap-3">
               <div>
-                <p className="text-[11px] uppercase tracking-[0.16em] text-ink-muted">
+                <div className="inline-flex items-center gap-2 rounded-full bg-white/80 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-accent ring-1 ring-blue-100">
+                  <Activity className="h-3.5 w-3.5" />
                   System status
-                </p>
-                <div className="mt-2 flex items-center gap-2">
+                </div>
+                <div className="mt-3 flex items-center gap-2.5">
                   <span
-                    className={`h-2.5 w-2.5 rounded-full ${operational ? "bg-accent-success pulse-dot" : "bg-accent-warning"}`}
+                    className={`h-3 w-3 rounded-full ${operational ? "bg-accent-success pulse-dot" : "bg-accent-warning"}`}
                   />
-                  <p className="text-xl font-semibold text-ink">
+                  <p className="font-display text-2xl font-semibold text-ink">
                     {operational ? "Operational" : "Needs attention"}
                   </p>
                 </div>
-                <p className="mt-1 text-sm text-ink-muted">
+                <p className="mt-2 max-w-lg text-sm text-ink-muted">
                   {data.note}
                 </p>
               </div>
-              <Badge variant="muted">{data.network.toUpperCase()}</Badge>
+              <Badge variant="info">{data.network.toUpperCase()}</Badge>
             </div>
           </Card>
 
@@ -119,22 +132,63 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
-            <Link href="/admin/deposits" className="pressable card-premium p-4">
-              <p className="text-sm font-medium text-ink">Deposits</p>
-              <p className="mt-1 text-xs text-ink-muted">
-                Review inbound TRX and block reasons
-              </p>
+            <Link
+              href="/admin/deposits"
+              className="pressable group card-premium relative overflow-hidden p-5 transition hover:-translate-y-0.5 hover:shadow-float"
+            >
+              <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-blue-600 to-sky-400 opacity-80" />
+              <div className="flex items-start gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft text-accent">
+                  <ArrowDownToLine className="h-5 w-5" />
+                </span>
+                <div>
+                  <p className="font-display text-base font-semibold text-ink group-hover:text-accent">
+                    Deposits
+                  </p>
+                  <p className="mt-1 text-sm text-ink-muted">
+                    Review inbound TRX and block reasons
+                  </p>
+                </div>
+              </div>
             </Link>
             <Link
               href="/admin/master-wallets"
-              className="pressable card-premium p-4"
+              className="pressable group card-premium relative overflow-hidden p-5 transition hover:-translate-y-0.5 hover:shadow-float"
             >
-              <p className="text-sm font-medium text-ink">Master wallets</p>
-              <p className="mt-1 text-xs text-ink-muted">
-                Manage receiving addresses
-              </p>
+              <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-sky-500 to-blue-600 opacity-80" />
+              <div className="flex items-start gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft text-accent">
+                  <Landmark className="h-5 w-5" />
+                </span>
+                <div>
+                  <p className="font-display text-base font-semibold text-ink group-hover:text-accent">
+                    Master wallets
+                  </p>
+                  <p className="mt-1 text-sm text-ink-muted">
+                    Manage receiving addresses
+                  </p>
+                </div>
+              </div>
             </Link>
           </div>
+
+          <Card className="border-dashed border-blue-200 bg-accent-soft/40">
+            <div className="flex items-start gap-3">
+              <span className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl bg-white text-accent shadow-sm ring-1 ring-blue-100">
+                <Sparkles className="h-4 w-4" />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-ink">
+                  Auto top-up tip
+                </p>
+                <p className="mt-1 text-sm text-ink-muted">
+                  Senders who deposit at least{" "}
+                  <span className="font-semibold text-accent">0.1 TRX</span> to
+                  your master wallet get fixed energy + bandwidth in seconds.
+                </p>
+              </div>
+            </div>
+          </Card>
         </>
       ) : null}
     </div>

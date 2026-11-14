@@ -1,11 +1,11 @@
 import { cn } from "@/lib/utils";
 
 const variants: Record<string, string> = {
-  success: "bg-accent-success/15 text-accent-success border-accent-success/30",
-  warning: "bg-accent-warning/15 text-accent-warning border-accent-warning/30",
-  danger: "bg-accent-danger/15 text-accent-danger border-accent-danger/30",
-  info: "bg-accent-info/15 text-accent-info border-accent-info/30",
-  muted: "bg-white/5 text-ink-muted border-white/10",
+  success: "bg-emerald-50 text-accent-success border-emerald-200",
+  warning: "bg-amber-50 text-accent-warning border-amber-200",
+  danger: "bg-red-50 text-accent-danger border-red-200",
+  info: "bg-accent-soft text-accent border-blue-200",
+  muted: "bg-slate-50 text-ink-muted border-canvas-border",
 };
 
 export function Badge({
@@ -20,7 +20,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded border px-2 py-0.5 text-xs font-medium",
+        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold",
         variants[variant],
         className,
       )}

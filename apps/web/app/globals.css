@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
   --nav-h: 4.25rem;
@@ -17,18 +17,15 @@ body {
 }
 
 body {
-  background:
-    radial-gradient(1200px 600px at 10% -10%, rgba(59, 130, 246, 0.12), transparent 55%),
-    radial-gradient(900px 500px at 100% 0%, rgba(34, 197, 94, 0.06), transparent 50%),
-    #070b12;
-  color: #e8eef7;
-  font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  background: theme("backgroundImage.blue-mesh");
+  color: #0f1b2d;
+  font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: none;
 }
 
 * {
-  border-color: #1e2836;
+  border-color: #d7e3f4;
 }
 
 @layer utilities {
@@ -39,12 +36,12 @@ body {
     padding-top: var(--safe-top);
   }
   .glass {
-    background: rgba(18, 24, 33, 0.72);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
   }
   .card-premium {
-    @apply rounded-2xl border border-white/[0.06] bg-canvas-elevated/90 shadow-[0_8px_32px_rgba(0,0,0,0.35)];
+    @apply rounded-2xl border border-canvas-border/80 bg-canvas-elevated shadow-card;
   }
   .pressable {
     @apply transition-transform duration-150 active:scale-[0.97];
@@ -53,10 +50,16 @@ body {
     animation: enter 220ms ease-out both;
   }
   .animate-fade-up {
-    animation: fadeUp 260ms ease-out both;
+    animation: fadeUp 280ms ease-out both;
   }
   .pulse-dot {
     animation: pulseDot 1.8s ease-in-out infinite;
+  }
+  .text-gradient-blue {
+    background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 55%, #60a5fa 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 }
 
@@ -74,7 +77,7 @@ body {
 @keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
@@ -87,12 +90,12 @@ body {
   100% {
     opacity: 1;
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.45);
+    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4);
   }
   50% {
     opacity: 0.85;
     transform: scale(1.05);
-    box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+    box-shadow: 0 0 0 6px rgba(22, 163, 74, 0);
   }
 }
 
@@ -108,9 +111,9 @@ body {
 .skeleton {
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.04) 25%,
-    rgba(255, 255, 255, 0.09) 50%,
-    rgba(255, 255, 255, 0.04) 75%
+    rgba(37, 99, 235, 0.05) 25%,
+    rgba(37, 99, 235, 0.12) 50%,
+    rgba(37, 99, 235, 0.05) 75%
   );
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;

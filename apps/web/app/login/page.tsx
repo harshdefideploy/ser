@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Zap } from "lucide-react";
 import { apiFetch, ApiError } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,16 +38,19 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex min-h-dvh items-center justify-center px-4 py-10">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.18),transparent_45%)]" />
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -left-24 top-10 h-72 w-72 rounded-full bg-blue-400/20 blur-3xl" />
+        <div className="absolute -right-16 bottom-10 h-80 w-80 rounded-full bg-sky-300/25 blur-3xl" />
+      </div>
       <div className="relative w-full max-w-md animate-fade-up">
         <div className="mb-8 text-center">
-          <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent/15 text-2xl text-accent shadow-glow">
-            ✦
+          <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-sky-400 text-white shadow-float">
+            <Zap className="h-7 w-7" fill="currentColor" />
           </span>
-          <p className="text-xs uppercase tracking-[0.22em] text-ink-faint">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-accent">
             TRON Gas Sponsor
           </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink">
+          <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight text-ink">
             Welcome back
           </h1>
           <p className="mt-2 text-sm text-ink-muted">
@@ -54,11 +58,13 @@ export default function LoginPage() {
           </p>
         </div>
         <form
-          className="card-premium space-y-4 p-5"
+          className="card-premium space-y-4 p-6 shadow-float"
           onSubmit={(e) => void onSubmit(e)}
         >
           <div>
-            <label className="mb-1.5 block text-xs text-ink-muted">Email</label>
+            <label className="mb-1.5 block text-xs font-semibold text-ink-muted">
+              Email
+            </label>
             <Input
               type="email"
               value={email}
@@ -68,7 +74,7 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-xs text-ink-muted">
+            <label className="mb-1.5 block text-xs font-semibold text-ink-muted">
               Password
             </label>
             <Input
@@ -80,7 +86,7 @@ export default function LoginPage() {
             />
           </div>
           {error ? (
-            <p className="rounded-xl border border-accent-danger/30 bg-accent-danger/10 px-3 py-2 text-sm text-accent-danger">
+            <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-accent-danger">
               {error}
             </p>
           ) : null}
@@ -88,11 +94,19 @@ export default function LoginPage() {
             {loading ? "Signing in…" : "Sign in"}
           </Button>
         </form>
-        <nav className="mt-6 flex flex-wrap justify-center gap-4 text-xs text-ink-faint">
-          <a href="/help">Help</a>
-          <a href="/terms">Terms</a>
-          <a href="/privacy">Privacy</a>
-          <a href="/risk-disclosure">Risk</a>
+        <nav className="mt-6 flex flex-wrap justify-center gap-4 text-xs font-medium text-ink-faint">
+          <a className="hover:text-accent" href="/help">
+            Help
+          </a>
+          <a className="hover:text-accent" href="/terms">
+            Terms
+          </a>
+          <a className="hover:text-accent" href="/privacy">
+            Privacy
+          </a>
+          <a className="hover:text-accent" href="/risk-disclosure">
+            Risk
+          </a>
         </nav>
       </div>
     </div>

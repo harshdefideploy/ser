@@ -24,7 +24,7 @@ export function MobileNav() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.06] glass md:hidden"
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-canvas-border glass md:hidden"
       style={{ paddingBottom: "var(--safe-bottom)" }}
     >
       <ul className="mx-auto flex h-[var(--nav-h)] max-w-lg items-stretch justify-around px-1">
@@ -37,17 +37,17 @@ export function MobileNav() {
               <Link
                 href={href}
                 className={cn(
-                  "pressable relative flex h-full flex-col items-center justify-center gap-0.5 text-[10px] font-medium",
+                  "pressable relative flex h-full flex-col items-center justify-center gap-0.5 text-[10px] font-semibold",
                   active ? "text-accent" : "text-ink-faint",
                 )}
               >
                 {active ? (
-                  <span className="absolute top-1 h-1 w-6 rounded-full bg-accent shadow-glow" />
+                  <span className="absolute top-1.5 h-1 w-7 rounded-full bg-accent shadow-glow" />
                 ) : null}
                 <Icon
                   className={cn(
                     "h-5 w-5 transition-transform duration-200",
-                    active && "scale-110 drop-shadow-[0_0_8px_rgba(59,130,246,0.55)]",
+                    active && "scale-110",
                   )}
                 />
                 <span>{label}</span>

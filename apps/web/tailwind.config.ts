@@ -11,37 +11,50 @@ const config: Config = {
     extend: {
       colors: {
         canvas: {
-          DEFAULT: "#070b12",
-          elevated: "#121821",
-          border: "#1e2836",
-          soft: "#0d1420",
+          DEFAULT: "#f4f7fc",
+          elevated: "#ffffff",
+          border: "#d7e3f4",
+          soft: "#eaf1fb",
         },
         ink: {
-          DEFAULT: "#e8eef7",
-          muted: "#8b9bb0",
-          faint: "#5c6b80",
+          DEFAULT: "#0f1b2d",
+          muted: "#5b6b82",
+          faint: "#8a9bb3",
         },
         accent: {
-          DEFAULT: "#3b82f6",
-          success: "#22c55e",
-          warning: "#eab308",
-          danger: "#ef4444",
-          info: "#3b82f6",
+          DEFAULT: "#2563eb",
+          soft: "#dbe7ff",
+          success: "#16a34a",
+          warning: "#d97706",
+          danger: "#dc2626",
+          info: "#2563eb",
         },
       },
       fontFamily: {
-        sans: ["IBM Plex Sans", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: [
+          "Plus Jakarta Sans",
+          "ui-sans-serif",
+          "system-ui",
+          "sans-serif",
+        ],
+        display: ["Sora", "Plus Jakarta Sans", "ui-sans-serif", "sans-serif"],
         mono: ["IBM Plex Mono", "ui-monospace", "monospace"],
       },
       boxShadow: {
-        glow: "0 0 24px rgba(59, 130, 246, 0.25)",
-        "glow-success": "0 0 20px rgba(34, 197, 94, 0.2)",
+        glow: "0 10px 30px rgba(37, 99, 235, 0.18)",
+        "glow-success": "0 8px 24px rgba(22, 163, 74, 0.16)",
+        card: "0 1px 2px rgba(15, 27, 45, 0.04), 0 12px 32px rgba(37, 99, 235, 0.06)",
+        float: "0 18px 50px rgba(37, 99, 235, 0.12)",
       },
       minHeight: {
         touch: "44px",
       },
       minWidth: {
         touch: "44px",
+      },
+      backgroundImage: {
+        "blue-mesh":
+          "radial-gradient(1200px 600px at 8% -10%, rgba(37,99,235,0.14), transparent 55%), radial-gradient(900px 500px at 100% 0%, rgba(59,130,246,0.10), transparent 50%), linear-gradient(180deg, #f8fbff 0%, #eef3fb 100%)",
       },
     },
   },
