@@ -234,7 +234,7 @@ export default function SettingsPage() {
             <p className="mt-1 text-sm text-ink-muted">
               Wipe deposits, sponsorships, orders, sender wallets, analytics, and
               audit logs. Keeps admin login, settings, master wallets, and
-              blacklist.
+              blacklist. Use this after switching GetGas / admin accounts.
             </p>
             {clearMsg ? (
               <p className="mt-2 text-sm text-accent-success">{clearMsg}</p>
