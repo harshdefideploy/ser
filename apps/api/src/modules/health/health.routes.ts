@@ -17,8 +17,33 @@ export const healthRoutes: FastifyPluginAsync = async (app) => {
     const gasProbe = await getgas.probe();
 
     const workers = await prisma.workerState.findMany();
+    // Critical pipeline workers must have run recently (embedded or standalone).
+    const critical = new Set([
+      "trx-deposit-monitor",
+      "trx-confirmation",
+      "sponsorship-provisioning",
+      "getgas-order-status",
+    ]);
+    const staleMs = Math.max(
+      60_000,
+      (Number(process.env.TRONGRID_POLL_INTERVAL) || 6_000) * 10,
+    );
+    const now = Date.now();
+    const freshCritical = workers.filter((w: {
+      workerName: string;
+      isHealthy: boolean;
+      lastRunAt: Date | null;
+    }) => {
+      if (!critical.has(w.workerName)) return true;
+      if (!w.isHealthy || !w.lastRunAt) return false;
+      return now - new Date(w.lastRunAt).getTime() <= staleMs;
+    });
     const workersOk =
-      workers.length === 0 || workers.every((w: { isHealthy: boolean }) => w.isHealthy);
+      workers.length > 0 &&
+      critical.size <=
+        workers.filter((w: { workerName: string }) => critical.has(w.workerName))
+          .length &&
+      freshCritical.length === workers.length;
 
     const degraded =
       !tronProbe.ok ||
@@ -51,8 +76,10 @@ export const healthRoutes: FastifyPluginAsync = async (app) => {
           status: workersOk ? "ok" : "degraded",
           message:
             workers.length === 0
-              ? "No worker state rows"
-              : `${workers.filter((w: { isHealthy: boolean }) => w.isHealthy).length}/${workers.length} healthy`,
+              ? "No worker state rows — auto top-up not running"
+              : workersOk
+                ? `${workers.filter((w: { isHealthy: boolean }) => w.isHealthy).length}/${workers.length} healthy`
+                : `Stale/unhealthy workers — auto top-up may be stopped (${freshCritical.filter((w: { workerName: string }) => critical.has(w.workerName)).length}/${critical.size} critical fresh)`,
         },
       },
       timestamp: new Date().toISOString(),

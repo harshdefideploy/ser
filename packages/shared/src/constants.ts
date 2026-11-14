@@ -26,10 +26,11 @@ export const DEFAULT_SETTINGS = {
   providerOrderMaxRetries: 5,
   providerTerm: "1h",
   sponsorshipExpiryHours: 24,
-  confirmationsRequired: 20,
+  /** 1 TRON block (~3s) — fast auto top-up; raise if you need stricter finality */
+  confirmationsRequired: 1,
   providerName: "getgas",
   masterWalletAddress: "",
-  monitorIntervalMs: 6_000,
+  monitorIntervalMs: 2_000,
   dailyProviderLimitTrx: "1000",
   monthlyProviderLimitTrx: "20000",
   maxActiveSponsorships: 500,

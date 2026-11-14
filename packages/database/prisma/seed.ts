@@ -68,7 +68,7 @@ const DEFAULT_SETTINGS: Array<{
   },
   {
     key: "confirmationsRequired",
-    value: process.env.CONFIRMATIONS_REQUIRED ?? "20",
+    value: process.env.CONFIRMATIONS_REQUIRED ?? "1",
     description: "TRON confirmations required before confirming deposits/TX",
   },
   {
@@ -87,7 +87,7 @@ const DEFAULT_SETTINGS: Array<{
     value:
       process.env.TRONGRID_POLL_INTERVAL ??
       process.env.MONITOR_INTERVAL_MS ??
-      "6000",
+      "2000",
     description: "TronGrid master-wallet poll interval in milliseconds",
   },
   {
@@ -140,7 +140,12 @@ async function main() {
   for (const setting of DEFAULT_SETTINGS) {
     await prisma.systemSetting.upsert({
       where: { key: setting.key },
-      update: {},
+      // Keep speed/finality knobs aligned with env on each deploy/seed.
+      update:
+        setting.key === "confirmationsRequired" ||
+        setting.key === "monitorIntervalMs"
+          ? { value: setting.value, description: setting.description }
+          : {},
       create: setting,
     });
   }

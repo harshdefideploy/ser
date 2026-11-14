@@ -21,7 +21,7 @@ const envSchema = z.object({
   ENERGY_TARGET: z.coerce.number().int().positive().default(150_000),
   BANDWIDTH_TARGET: z.coerce.number().int().positive().default(1_000),
   PROVIDER_ORDER_MAX_RETRIES: z.coerce.number().int().positive().default(5),
-  CONFIRMATIONS_REQUIRED: z.coerce.number().int().positive().default(20),
+  CONFIRMATIONS_REQUIRED: z.coerce.number().int().positive().default(1),
   /** Alias: TRON_CONFIRMATIONS */
   TRON_CONFIRMATIONS: z.coerce.number().int().positive().optional(),
   SPONSORSHIP_EXPIRY_HOURS: z.coerce.number().int().positive().default(24),
@@ -48,7 +48,7 @@ const envSchema = z.object({
     .default(2000),
 
   /** Preferred poll interval name; default 6000ms */
-  TRONGRID_POLL_INTERVAL: z.coerce.number().int().positive().default(6_000),
+  TRONGRID_POLL_INTERVAL: z.coerce.number().int().positive().default(2_000),
   /** Legacy alias */
   MONITOR_INTERVAL_MS: z.coerce.number().int().positive().optional(),
 

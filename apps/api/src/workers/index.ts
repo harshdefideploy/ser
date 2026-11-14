@@ -12,7 +12,7 @@ async function sleep(ms: number): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function tick(): Promise<void> {
+export async function tick(): Promise<void> {
   await runTrxDepositMonitorOnce().catch((err) => {
     logger.error({
       service: "worker",
@@ -57,9 +57,14 @@ async function tick(): Promise<void> {
   });
 }
 
-async function main() {
-  const env = getEnv();
+let loopStarted = false;
 
+/**
+ * Run the deposit → confirm → GetGas pipeline in-process.
+ * Safe to call from the API server when no dedicated worker service exists.
+ */
+export function startBackgroundWorkers(): void {
+  const env = getEnv();
   if (!env.WORKER_ENABLED) {
     logger.info({
       service: "worker",
@@ -68,6 +73,8 @@ async function main() {
     });
     return;
   }
+  if (loopStarted) return;
+  loopStarted = true;
 
   logger.info({
     service: "worker",
@@ -78,14 +85,34 @@ async function main() {
       "Master-wallet TRX monitor + confirmation + GetGas provisioning workers started",
   });
 
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const settings = await getSystemSettings().catch(() => null);
-    const interval =
-      settings?.monitorIntervalMs ?? env.TRONGRID_POLL_INTERVAL;
-    await tick();
-    await sleep(interval);
-  }
+  void (async () => {
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const settings = await getSystemSettings().catch(() => null);
+      const interval =
+        settings?.monitorIntervalMs ?? env.TRONGRID_POLL_INTERVAL;
+      await tick();
+      await sleep(Math.max(1000, interval));
+    }
+  })();
 }
 
-void main();
+async function main() {
+  startBackgroundWorkers();
+  if (!getEnv().WORKER_ENABLED) {
+    return;
+  }
+  // Keep standalone worker process alive.
+  await new Promise(() => {});
+}
+
+const isDirectRun =
+  typeof process.argv[1] === "string" &&
+  (process.argv[1].endsWith("workers/index.js") ||
+    process.argv[1].endsWith("workers\\index.js") ||
+    process.argv[1].endsWith("workers/index.ts") ||
+    process.argv[1].endsWith("workers\\index.ts"));
+
+if (isDirectRun) {
+  void main();
+}

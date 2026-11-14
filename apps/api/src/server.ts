@@ -1,6 +1,7 @@
 import { buildApp } from "./app.js";
 import { getEnv } from "./config/index.js";
 import { logger } from "./lib/logger.js";
+import { startBackgroundWorkers } from "./workers/index.js";
 
 async function main() {
   const env = getEnv();
@@ -10,12 +11,15 @@ async function main() {
     // Prefer platform PORT (Voroa/Render/etc), else API_PORT
     const port = Number(process.env.PORT) || env.API_PORT;
     await app.listen({ port, host: "0.0.0.0" });
+    // No separate Railway worker service — run auto top-up pipeline in-process.
+    startBackgroundWorkers();
     logger.info({
       service: "api",
       event: "SERVER_STARTED",
       port,
       network: env.TRON_NETWORK,
       appEnv: env.APP_ENV,
+      workersEmbedded: env.WORKER_ENABLED,
       phase: 1,
     });
   } catch (err) {
