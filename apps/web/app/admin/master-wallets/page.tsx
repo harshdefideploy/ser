@@ -10,7 +10,7 @@ import { Badge, statusVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { CopyButton } from "@/components/ui/copy-button";
+import { CopyButton, CopyableText } from "@/components/ui/copy-button";
 import { Sheet } from "@/components/ui/sheet";
 import { ConfirmSheet } from "@/components/ui/confirm-sheet";
 import { ErrorState } from "@/components/ui/error-state";
@@ -163,11 +163,8 @@ export default function MasterWalletsPage() {
                 <p className="text-[11px] uppercase tracking-[0.14em] text-ink-muted">
                   {row.label || "Receiver"}
                 </p>
-                <div className="mt-1 flex items-center gap-1">
-                  <p className="font-mono text-base text-ink">
-                    {shortAddress(row.address, 6, 4)}
-                  </p>
-                  <CopyButton value={row.address} />
+                <div className="mt-1">
+                  <CopyableText value={row.address} left={6} right={4} />
                 </div>
               </div>
               <Badge
@@ -233,11 +230,8 @@ export default function MasterWalletsPage() {
             <tbody>
               {data.data.map((row) => (
                 <tr key={row.id} className="border-t border-white/[0.06]">
-                  <td className="px-3 py-2 font-mono text-xs">
-                    <div className="flex items-center gap-1">
-                      {shortAddress(row.address, 8, 4)}
-                      <CopyButton value={row.address} />
-                    </div>
+                  <td className="px-3 py-2">
+                    <CopyableText value={row.address} left={8} right={4} />
                   </td>
                   <td className="px-3 py-2">{row.label || "—"}</td>
                   <td className="px-3 py-2">{row.network}</td>

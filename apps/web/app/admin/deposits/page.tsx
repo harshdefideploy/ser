@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Badge, statusVariant } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { CopyButton } from "@/components/ui/copy-button";
+import { CopyButton, CopyableText } from "@/components/ui/copy-button";
 import { ErrorState } from "@/components/ui/error-state";
 import { CardSkeleton } from "@/components/ui/skeleton";
 import { tronscanAddressUrl, tronscanTxUrl } from "@/lib/tronscan";
@@ -91,17 +91,17 @@ export default function DepositsPage() {
                 <Badge variant={statusVariant(d.status)}>{d.status}</Badge>
               </div>
               <div className="mt-3 space-y-1.5 text-sm">
-                <div className="flex items-center gap-1 text-ink-muted">
+                <div className="flex flex-wrap items-center gap-2 text-ink-muted">
                   <span className="text-ink-faint">From</span>
+                  <CopyableText value={d.fromAddress} />
                   <a
-                    className="font-mono text-ink"
+                    className="text-xs font-semibold text-accent hover:underline"
                     href={tronscanAddressUrl(d.fromAddress)}
                     target="_blank"
                     rel="noreferrer"
                   >
-                    {shortAddress(d.fromAddress)}
+                    TronScan
                   </a>
-                  <CopyButton value={d.fromAddress} />
                 </div>
                 <p className="text-ink-muted">
                   Received by{" "}
@@ -167,35 +167,12 @@ export default function DepositsPage() {
                       </div>
                     </td>
                     <td className="px-3 py-2">
-                      <div className="flex items-center gap-1">
-                        <a
-                          className="font-mono text-xs text-accent hover:underline"
-                          href={tronscanAddressUrl(d.fromAddress)}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          {shortAddress(d.fromAddress)}
-                        </a>
-                        <CopyButton value={d.fromAddress} />
-                      </div>
+                      <CopyableText value={d.fromAddress} />
                     </td>
                     <td className="px-3 py-2 font-mono">{d.amountTrx}</td>
                     <td className="px-3 py-2">
                       {d.masterWallet ? (
-                        <div className="flex items-center gap-1">
-                          <a
-                            className="font-mono text-xs text-accent hover:underline"
-                            href={tronscanAddressUrl(d.masterWallet.address)}
-                            target="_blank"
-                            rel="noreferrer"
-                            title={d.masterWallet.address}
-                          >
-                            {receivedBy.length > 16
-                              ? `${receivedBy.slice(0, 12)}…`
-                              : receivedBy}
-                          </a>
-                          <CopyButton value={d.masterWallet.address} />
-                        </div>
+                        <CopyableText value={d.masterWallet.address} left={8} right={4} />
                       ) : (
                         "—"
                       )}

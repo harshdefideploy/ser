@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Badge, statusVariant } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { CopyButton } from "@/components/ui/copy-button";
+import { CopyButton, CopyableText } from "@/components/ui/copy-button";
 import { ErrorState } from "@/components/ui/error-state";
 import { CardSkeleton } from "@/components/ui/skeleton";
 import { tronscanTxUrl } from "@/lib/tronscan";
@@ -92,16 +92,8 @@ export default function SponsorshipsPage() {
                     <p className="text-[11px] uppercase tracking-[0.14em] text-ink-muted">
                       Recipient
                     </p>
-                    <div className="mt-1 flex items-center gap-1">
-                      <p className="font-mono text-base text-ink">
-                        {shortAddress(row.walletAddress)}
-                      </p>
-                      <span
-                        onClick={(e) => e.preventDefault()}
-                        className="inline-flex"
-                      >
-                        <CopyButton value={row.walletAddress} />
-                      </span>
+                    <div className="mt-1">
+                      <CopyableText value={row.walletAddress} />
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5">
@@ -175,30 +167,20 @@ export default function SponsorshipsPage() {
             <tbody>
               {data.data.map((row) => (
                 <tr key={row.id} className="border-t border-white/[0.06]">
-                  <td className="px-3 py-2 font-mono text-xs">
-                    <div className="flex items-center gap-1">
+                  <td className="px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      <CopyableText value={row.walletAddress} />
                       <Link
                         href={`/admin/sponsorships/${row.id}`}
-                        className="text-accent hover:underline"
+                        className="text-xs font-semibold text-accent hover:underline"
                       >
-                        {shortAddress(row.walletAddress)}
+                        Open
                       </Link>
-                      <CopyButton value={row.walletAddress} />
                     </div>
                   </td>
-                  <td className="px-3 py-2 font-mono text-xs">
+                  <td className="px-3 py-2">
                     {row.depositTxid ? (
-                      <div className="flex items-center gap-1">
-                        <a
-                          className="text-accent hover:underline"
-                          href={tronscanTxUrl(row.depositTxid)}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          {shortAddress(row.depositTxid, 8, 4)}
-                        </a>
-                        <CopyButton value={row.depositTxid} />
-                      </div>
+                      <CopyableText value={row.depositTxid} left={8} right={4} />
                     ) : (
                       "—"
                     )}

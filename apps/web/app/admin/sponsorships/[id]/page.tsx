@@ -6,6 +6,7 @@ import { apiFetch } from "@/lib/api";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card } from "@/components/ui/card";
 import { Badge, statusVariant } from "@/components/ui/badge";
+import { CopyableText } from "@/components/ui/copy-button";
 
 export default function SponsorshipDetailPage() {
   const params = useParams<{ id: string }>();
@@ -35,9 +36,17 @@ export default function SponsorshipDetailPage() {
             </span>
           </div>
           <p className="mt-4 text-sm text-ink-muted">Wallet</p>
-          <p className="font-mono text-sm">{data.credit.wallet.address}</p>
+          <CopyableText
+            value={data.credit.wallet.address}
+            truncate={false}
+            className="mt-1"
+          />
           <p className="mt-3 text-sm text-ink-muted">Deposit TX</p>
-          <p className="font-mono text-sm">{data.credit.deposit.txid}</p>
+          <CopyableText
+            value={data.credit.deposit.txid}
+            truncate={false}
+            className="mt-1"
+          />
         </Card>
       ) : null}
     </div>

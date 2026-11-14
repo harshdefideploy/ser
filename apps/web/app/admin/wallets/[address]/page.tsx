@@ -6,6 +6,7 @@ import { apiFetch } from "@/lib/api";
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge, statusVariant } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { CopyableText } from "@/components/ui/copy-button";
 
 export default function WalletDetailPage() {
   const params = useParams<{ address: string }>();
@@ -48,7 +49,11 @@ export default function WalletDetailPage() {
         <div className="space-y-4">
           <Card>
             <p className="text-xs text-ink-muted">Address</p>
-            <p className="mt-1 break-all font-mono text-sm">{wallet.address}</p>
+            <CopyableText
+              value={wallet.address}
+              truncate={false}
+              className="mt-1"
+            />
             <div className="mt-3 flex gap-2">
               <Badge variant="muted">{wallet.network}</Badge>
               <Badge variant={statusVariant(wallet.status)}>

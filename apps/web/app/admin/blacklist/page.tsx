@@ -10,7 +10,7 @@ import { Badge, statusVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { CopyButton } from "@/components/ui/copy-button";
+import { CopyButton, CopyableText } from "@/components/ui/copy-button";
 import { Sheet } from "@/components/ui/sheet";
 import { ConfirmSheet } from "@/components/ui/confirm-sheet";
 import { ErrorState } from "@/components/ui/error-state";
@@ -162,16 +162,16 @@ export default function BlacklistPage() {
                 <p className="text-[11px] uppercase tracking-[0.14em] text-ink-muted">
                   Blocked wallet
                 </p>
-                <div className="mt-1 flex items-center gap-1">
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  <CopyableText value={row.address} left={6} right={4} />
                   <a
-                    className="font-mono text-base text-ink"
+                    className="text-xs font-semibold text-accent hover:underline"
                     href={tronscanAddressUrl(row.address)}
                     target="_blank"
                     rel="noreferrer"
                   >
-                    {shortAddress(row.address, 4, 4)}
+                    TronScan
                   </a>
-                  <CopyButton value={row.address} />
                 </div>
               </div>
               <Badge

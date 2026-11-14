@@ -7,10 +7,10 @@ import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Badge, statusVariant } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { CopyButton } from "@/components/ui/copy-button";
+import { CopyableText } from "@/components/ui/copy-button";
 import { ErrorState } from "@/components/ui/error-state";
 import { CardSkeleton } from "@/components/ui/skeleton";
-import { relativeTime, shortAddress } from "@/lib/format";
+import { relativeTime } from "@/lib/format";
 
 interface WalletRow {
   id: string;
@@ -63,17 +63,7 @@ export default function WalletsPage() {
           <Link key={w.id} href={`/admin/wallets/${w.address}`}>
             <Card className="mb-3 space-y-2">
               <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-1">
-                  <p className="font-mono text-base text-ink">
-                    {shortAddress(w.address)}
-                  </p>
-                  <span
-                    onClick={(e) => e.preventDefault()}
-                    className="inline-flex"
-                  >
-                    <CopyButton value={w.address} />
-                  </span>
-                </div>
+                <CopyableText value={w.address} left={6} right={4} />
                 <Badge variant={statusVariant(w.status)}>{w.status}</Badge>
               </div>
               <div className="flex flex-wrap gap-3 text-xs text-ink-muted">
@@ -102,13 +92,16 @@ export default function WalletsPage() {
             <tbody>
               {data.data.map((w) => (
                 <tr key={w.id} className="border-t border-white/[0.06]">
-                  <td className="px-3 py-2 font-mono text-xs">
-                    <Link
-                      className="text-accent hover:underline"
-                      href={`/admin/wallets/${w.address}`}
-                    >
-                      {shortAddress(w.address, 8, 4)}
-                    </Link>
+                  <td className="px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      <CopyableText value={w.address} left={8} right={4} />
+                      <Link
+                        className="text-xs font-semibold text-accent hover:underline"
+                        href={`/admin/wallets/${w.address}`}
+                      >
+                        Open
+                      </Link>
+                    </div>
                   </td>
                   <td className="px-3 py-2">{w.network}</td>
                   <td className="px-3 py-2">
