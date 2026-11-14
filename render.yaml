@@ -1,0 +1,120 @@
+# Render Blueprint — TRON Gas Sponsor
+# Dashboard → New → Blueprint → this repo
+#
+# Uses your EXISTING Render Postgres (no DB created here).
+# On first apply, set DATABASE_URL to that DB's Internal Database URL.
+#
+# Services: tron-api (web) · tron-web (admin) · tron-worker (jobs)
+
+previewsEnabled: false
+
+envVarGroups:
+  - name: tron-shared
+    envVars:
+      # Paste Internal Database URL from your existing Render Postgres
+      - key: DATABASE_URL
+        sync: false
+
+      - key: NODE_ENV
+        value: production
+      - key: APP_ENV
+        value: production
+      - key: TRON_NETWORK
+        value: shasta
+
+      - key: JWT_SECRET
+        generateValue: true
+      - key: COOKIE_SECRET
+        generateValue: true
+      # Must be exactly 64 hex chars (set in Dashboard)
+      - key: ENCRYPTION_KEY
+        sync: false
+
+      - key: ADMIN_EMAIL
+        value: admin@example.com
+      - key: ADMIN_PASSWORD
+        sync: false
+
+      - key: MASTER_TRON_ADDRESS
+        sync: false
+      - key: TRONGRID_API_KEY
+        sync: false
+      - key: GETGAS_API_KEY
+        sync: false
+      - key: GETGAS_API_BASE_URL
+        value: https://getgas.io/api/v1
+      - key: GETGAS_WEBHOOK_SECRET
+        sync: false
+      - key: GETGAS_PROVIDER_TERM
+        value: 1h
+      - key: INTERNAL_API_SECRET
+        generateValue: true
+
+services:
+  # ── API (monitor) ─────────────────────────────────────────────
+  - type: web
+    name: tron-api
+    runtime: node
+    plan: free
+    region: singapore
+    branch: main
+    buildCommand: npm install && npm run build:api
+    startCommand: npm run start:release
+    healthCheckPath: /health
+    envVars:
+      - fromGroup: tron-shared
+      - key: WORKER_ENABLED
+        value: "false"
+      - key: API_URL
+        fromService:
+          name: tron-api
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: WEB_URL
+        fromService:
+          name: tron-web
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
+
+  # ── Admin UI ──────────────────────────────────────────────────
+  - type: web
+    name: tron-web
+    runtime: node
+    plan: free
+    region: singapore
+    branch: main
+    buildCommand: npm install && npm run build:web
+    startCommand: npm run start:web
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Baked into Next at build time — must match API public URL
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          name: tron-api
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
+
+  # ── Background worker (paid plan required on Render) ──────────
+  - type: worker
+    name: tron-worker
+    runtime: node
+    plan: starter
+    region: singapore
+    branch: main
+    buildCommand: npm install && npm run build:api
+    startCommand: npm run start:worker
+    envVars:
+      - fromGroup: tron-shared
+      - key: WORKER_ENABLED
+        value: "true"
+      - key: API_URL
+        fromService:
+          name: tron-api
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: WEB_URL
+        fromService:
+          name: tron-web
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL

@@ -24,6 +24,24 @@ docker compose up -d --build
 
 Services: `web`, `api`, `worker`, `postgres`.
 
+## Render (Blueprint)
+
+Repo root `render.yaml` deploys **tron-api**, **tron-web**, **tron-worker**. It does **not** create Postgres — use your existing Render database.
+
+1. Dashboard → **New** → **Blueprint** → select `harshdefideploy/ser` (branch `main`)
+2. When prompted, set:
+   - `DATABASE_URL` = **Internal Database URL** from your existing Render Postgres
+   - `ENCRYPTION_KEY` = 64 hex chars
+   - `ADMIN_PASSWORD` = your admin password
+   - Tron / GetGas secrets as needed
+3. Prefer the Blueprint **region** matching your Postgres region (default in file: `singapore`)
+4. After deploy:
+   - `GET https://tron-api.onrender.com/health`
+   - `https://tron-web.onrender.com/login` with `ADMIN_EMAIL` / `ADMIN_PASSWORD`
+5. Worker uses **Starter** plan (Render background workers are not free). Skip creating `tron-worker` if you only need admin UI + API for now.
+
+`API_URL` / `WEB_URL` / `NEXT_PUBLIC_API_URL` are wired from each service’s `RENDER_EXTERNAL_URL`.
+
 ## Voroa (full stack: monitor + web + worker + tron-db)
 
 Deploy **three** Node services from the same repo + one Postgres (`tron-db`).
