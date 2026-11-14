@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Zap } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { greeting } from "@/lib/format";
+import { LiveBadge } from "@/components/ui/live-atmosphere";
 
 interface DashboardResponse {
   network: string;
@@ -41,6 +42,7 @@ export function AppHeader() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <LiveBadge />
           <span className="inline-flex items-center gap-1.5 rounded-full border border-canvas-border bg-white px-2.5 py-1 text-[11px] font-semibold text-ink-muted shadow-sm">
             <span
               className={`h-1.5 w-1.5 rounded-full ${healthy ? "bg-accent-success pulse-dot" : "bg-accent-warning"}`}

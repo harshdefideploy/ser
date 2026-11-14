@@ -20,18 +20,21 @@ export function StatCard({
   hint,
   alert,
   className,
+  stagger,
 }: {
   label: string;
   value: string | number;
   hint?: string;
   alert?: boolean;
   className?: string;
+  stagger?: number;
 }) {
   return (
     <Card
       className={cn(
-        "relative overflow-hidden",
+        "stat-shine relative overflow-hidden",
         alert ? "border-amber-300 ring-1 ring-amber-200" : undefined,
+        stagger ? `stagger-${stagger}` : undefined,
         className,
       )}
     >
