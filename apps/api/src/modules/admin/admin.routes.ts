@@ -655,4 +655,64 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
       totalPages: Math.ceil(total / pageSize) || 1,
     };
   });
+
+  /**
+   * Wipe operational data (deposits, credits, orders, wallets, analytics, audit).
+   * Keeps admin users, system settings, master wallets, and blacklist.
+   */
+  app.post("/admin/clear-data", async (request, reply) => {
+    if (!requireAdminRole(request, reply, ["SUPER_ADMIN", "ADMIN"])) return;
+    const body = z
+      .object({
+        confirm: z.literal("CLEAR_OPERATIONAL_DATA"),
+      })
+      .safeParse(request.body);
+    if (!body.success) {
+      return reply.status(400).send({
+        error: 'Send { "confirm": "CLEAR_OPERATIONAL_DATA" } to proceed',
+      });
+    }
+
+    const result = await prisma.$transaction(async (tx) => {
+      const providerOrders = await tx.providerOrder.deleteMany();
+      const credits = await tx.sponsorshipCredit.deleteMany();
+      const deposits = await tx.tRXDeposit.deleteMany();
+      const wallets = await tx.wallet.deleteMany();
+      const analytics = await tx.dailyAnalytics.deleteMany();
+      const audit = await tx.auditLog.deleteMany();
+      const workers = await tx.workerState.deleteMany();
+      return {
+        providerOrders: providerOrders.count,
+        sponsorshipCredits: credits.count,
+        deposits: deposits.count,
+        wallets: wallets.count,
+        dailyAnalytics: analytics.count,
+        auditLogs: audit.count,
+        workerStates: workers.count,
+      };
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        adminId: request.admin!.sub,
+        action: "CLEAR_OPERATIONAL_DATA",
+        entityType: "system",
+        metadata: result,
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"]?.slice(0, 240),
+      },
+    });
+
+    return {
+      ok: true,
+      cleared: result,
+      kept: [
+        "admin_users",
+        "system_settings",
+        "master_wallets",
+        "blacklisted_wallets",
+      ],
+      note: "Operational history wiped. Master wallets and settings kept.",
+    };
+  });
 };

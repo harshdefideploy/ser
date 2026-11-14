@@ -9,6 +9,7 @@ import {
   Network,
   Shield,
   SlidersHorizontal,
+  Trash2,
   User,
 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
@@ -35,6 +36,9 @@ export default function SettingsPage() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingPayload, setPendingPayload] =
     useState<Partial<SystemSettingsDto> | null>(null);
+  const [clearOpen, setClearOpen] = useState(false);
+  const [clearing, setClearing] = useState(false);
+  const [clearMsg, setClearMsg] = useState<string | null>(null);
 
   useEffect(() => {
     if (data?.settings) setForm(data.settings);
@@ -220,6 +224,36 @@ export default function SettingsPage() {
         </form>
       ) : null}
 
+      <Card className="mt-4 space-y-3 border-accent-danger/30 bg-accent-danger/5">
+        <div className="flex items-start gap-3">
+          <span className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl bg-accent-danger/10 text-accent-danger">
+            <Trash2 className="h-4 w-4" />
+          </span>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-ink">Clear operational data</p>
+            <p className="mt-1 text-sm text-ink-muted">
+              Wipe deposits, sponsorships, orders, sender wallets, analytics, and
+              audit logs. Keeps admin login, settings, master wallets, and
+              blacklist.
+            </p>
+            {clearMsg ? (
+              <p className="mt-2 text-sm text-accent-success">{clearMsg}</p>
+            ) : null}
+            <Button
+              type="button"
+              variant="danger"
+              className="mt-3 min-h-touch"
+              onClick={() => {
+                setClearMsg(null);
+                setClearOpen(true);
+              }}
+            >
+              Clear data…
+            </Button>
+          </div>
+        </div>
+      </Card>
+
       <ConfirmSheet
         open={confirmOpen}
         onClose={() => {
@@ -231,6 +265,38 @@ export default function SettingsPage() {
         confirmLabel="Save changes"
         loading={saving}
         onConfirm={saveConfirmed}
+      />
+
+      <ConfirmSheet
+        open={clearOpen}
+        onClose={() => setClearOpen(false)}
+        title="Clear all operational data?"
+        description="This permanently deletes deposits, sponsorships, provider orders, sender wallets, analytics, and audit history. Master wallets and settings stay. This cannot be undone."
+        confirmLabel="Clear data"
+        danger
+        loading={clearing}
+        onConfirm={async () => {
+          setClearing(true);
+          setClearMsg(null);
+          try {
+            const res = await apiFetch<{
+              ok: boolean;
+              cleared: Record<string, number>;
+            }>("/admin/clear-data", {
+              method: "POST",
+              body: JSON.stringify({ confirm: "CLEAR_OPERATIONAL_DATA" }),
+            });
+            setClearMsg(
+              `Cleared ${res.cleared.deposits ?? 0} deposits, ${res.cleared.sponsorshipCredits ?? 0} credits, ${res.cleared.providerOrders ?? 0} orders.`,
+            );
+            setClearOpen(false);
+            await queryClient.invalidateQueries();
+          } catch (err) {
+            setClearMsg(err instanceof Error ? err.message : "Clear failed");
+          } finally {
+            setClearing(false);
+          }
+        }}
       />
     </div>
   );

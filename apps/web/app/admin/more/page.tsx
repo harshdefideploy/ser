@@ -23,7 +23,7 @@ const rows = [
   { href: "/admin/providers", label: "Providers", icon: Plug, hint: "GetGas status" },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart, hint: "Provider orders" },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3, hint: "Trends" },
-  { href: "/admin/settings", label: "Settings", icon: Settings, hint: "System knobs" },
+  { href: "/admin/settings", label: "Settings", icon: Settings, hint: "System knobs + clear data" },
   { href: "/admin/audit", label: "Audit log", icon: ScrollText, hint: "Admin actions" },
   { href: "/help", label: "Help & policies", icon: CircleHelp, hint: "Help, terms, privacy" },
 ];
