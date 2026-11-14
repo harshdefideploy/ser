@@ -17,7 +17,7 @@ const envSchema = z.object({
   MASTER_TRON_ADDRESS: z.string().optional().default(""),
 
   /** Preferred name; falls back from MIN_QUALIFYING_TRX via preprocess below */
-  MIN_TRX_DEPOSIT: z.coerce.number().positive().default(1),
+  MIN_TRX_DEPOSIT: z.coerce.number().positive().default(0.1),
   ENERGY_TARGET: z.coerce.number().int().positive().default(150_000),
   BANDWIDTH_TARGET: z.coerce.number().int().positive().default(1_000),
   PROVIDER_ORDER_MAX_RETRIES: z.coerce.number().int().positive().default(5),

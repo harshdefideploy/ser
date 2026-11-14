@@ -35,7 +35,7 @@ const DEFAULT_SETTINGS: Array<{
   {
     key: "minimumQualifyingTrx",
     value:
-      process.env.MIN_TRX_DEPOSIT ?? process.env.MIN_QUALIFYING_TRX ?? "1",
+      process.env.MIN_TRX_DEPOSIT ?? process.env.MIN_QUALIFYING_TRX ?? "0.1",
     description: "Minimum TRX deposit amount to earn one sponsorship credit",
   },
   {
@@ -143,7 +143,8 @@ async function main() {
       // Keep speed/finality knobs aligned with env on each deploy/seed.
       update:
         setting.key === "confirmationsRequired" ||
-        setting.key === "monitorIntervalMs"
+        setting.key === "monitorIntervalMs" ||
+        setting.key === "minimumQualifyingTrx"
           ? { value: setting.value, description: setting.description }
           : {},
       create: setting,

@@ -17,7 +17,7 @@ export const BUSINESS_RULE = {
 } as const;
 
 export const DEFAULT_SETTINGS = {
-  minimumQualifyingTrx: "1",
+  minimumQualifyingTrx: "0.1",
   /** Fixed Energy package per sponsorship (not top-up-to-target) */
   energyTarget: 150_000,
   /** Fixed Bandwidth package per sponsorship (not top-up-to-target) */
